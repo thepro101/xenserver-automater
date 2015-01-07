@@ -1,0 +1,20 @@
+#!/bin/bash
+XENSTOREREAD="/usr/bin/xenstore-read"
+
+[ -x $XENSTOREREAD ] || exit 0
+
+USER=`$XENSTOREREAD vm-data/user`
+PW=`$XENSTOREREAD vm-data/pw`
+UID=`$XENSTOREREAD vm-data/id`
+
+for DATA in $USER $PW $UID; do
+        [ "$DATA" = "" ] && exit 0
+done
+
+useradd -m $USER 
+useradd $USER -s /bin/bash 
+echo $USER:$PW | chpasswd
+echo "$USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+exit 0
+
